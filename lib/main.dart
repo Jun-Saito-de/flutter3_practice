@@ -39,42 +39,72 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('My App'),
         backgroundColor: Colors.lightBlueAccent, // ← ここで背景色を設定
-          ),
-
-          body: Center(
-            child: Text(
-              _message,
-              style: const TextStyle(fontSize: 22.0,
-              ),
-            )
-          ),
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _index,
-          backgroundColor: Colors.lightBlueAccent,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                label: 'Android',
-                icon: Icon(Icons.android, color: Colors.black, size: 50),
-            ),
-            BottomNavigationBarItem(
-              label: 'Favorite',
-              icon: Icon(Icons.favorite, color: Colors.black, size: 50),
-            ),
-            BottomNavigationBarItem(
-              label: 'Home',
-              icon: Icon(Icons.home, color: Colors.black, size: 50),
-            ),
-          ],
-        onTap: tapBottomIcon,
       ),
-        );
+      body: Column(
+        children: <Widget>[
+          Text(
+            _message,
+            style: TextStyle(
+              fontSize: 32.0,
+            ),
+          ),
+          ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(20.0),
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.android, size: 32),
+                title: const Text(
+                  'first item',
+                  style: TextStyle(fontSize: 28),
+                ),
+                selected: _index == 1,
+                onTap: () {
+                  setState(() {
+                    _index = 1;
+                    tapTile();
+                  });
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.android, size: 32),
+                title: const Text(
+                  'second item',
+                  style: TextStyle(fontSize: 28),
+                ),
+                selected: _index == 2,
+                onTap: () {
+                  setState(() {
+                    _index = 2;
+                    tapTile();
+                  });
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.android, size: 32),
+                title: const Text(
+                  'third item',
+                  style: TextStyle(fontSize: 28),
+                ),
+                selected: _index == 3,
+                onTap: () {
+                  setState(() {
+                    _index = 3;
+                    tapTile();
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
-  void tapBottomIcon(int value) {
-    var items = ['Android', 'Heart', 'Home'];
-    setState(() {
-      _index = value;
-      _message = 'you tapped: "' + items[_index] + '".';
-    });
+  void tapTile() {
+    // メッセージの更新
+setState(() {
+  _message = 'you tapped: No, $_index.';
+});
   }
 }
