@@ -1,110 +1,88 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
+// Flutterのアプリケーション全体をラップするStatelessWidget
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return MaterialApp( //Flutterアプリの基本的な設定（テーマ、ナビゲーション、画面遷移）を管理
+      title: 'Generated App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
+        primaryColor: const Color(0xff2196f3),
+        canvasColor: const Color(0xfffafafa),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(), // 最初に表示されるウィジェットを指定します。この場合、MyHomePage()というホームページが表示
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  // ウィジェットが生成される際に呼ばれ、
+  // ウィジェットの状態を管理するStateオブジェクトを返す
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  static var _message = 'ok.'; //static 変数 _message を定義。アプリ内で表示するメッセージ。
-  static var _index = 0;
+// State<MyHomePage>を継承
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin { // アニメーションのためのTickerを提供するミックスイン
+// タブのリストを定義
+  static const List<Tab> tabs = <Tab>[
+    Tab(text: 'One'), // タブに表示する文字を指定
+    Tab(text: 'Two'),
+    Tab(text: 'Three'),
+  ];
+
+  // TabController**は、タブの動作を管理するために使うオブジェクトです。タブの切り替えやアニメーションの動作を制御します。
+  // lateというキーワードは、変数が遅延初期化されることを意味します。
+  // TabControllerを保管するための、_tabControllerフィールドが設定されている
+  late TabController _tabController;
+
+  @override
+  // initState()は、ウィジェットの初期化処理を行うメソッドです。ここでは、タブコントローラを初期化
+  void initState() {
+   super.initState();
+   _tabController = TabController( // タブの切り替えやアニメーションを管理するためのコントローラー。アニメーションを正常に動作させるために、vsyncを指定します。
+     vsync: this, // アニメーションの同期をとるために使います。thisを指定することで、現在のウィジェットがその役割を担います。
+     length: tabs.length // リストの長さ（タブの数）を指定します。タブの数に合わせてTabControllerを設定
+   );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar: アプリケーションの上部に表示されるタイトルバー
-      appBar: AppBar(
+      appBar: AppBar( // 画面上部に表示されるアプリケーションのバー。タイトルとタブバーを設定。
         title: Text('My App'),
-        backgroundColor: Colors.lightBlueAccent, // ← ここで背景色を設定
+        bottom: TabBar( // タブを管理するウィジェット
+            controller: _tabController, // controllerでTabControllerを指定
+            tabs: tabs // タブを表示するためにtabsリストを指定
+        ),
       ),
-      body: Column(
-        children: <Widget>[
-          Text(
-            _message,
-            style: TextStyle(
-              fontSize: 32.0,
-            ),
-          ),
-          ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(20.0),
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.android, size: 32),
-                title: const Text(
-                  'first item',
-                  style: TextStyle(fontSize: 28),
-                ),
-                selected: _index == 1,
-                onTap: () {
-                  setState(() {
-                    _index = 1;
-                    tapTile();
-                  });
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.android, size: 32),
-                title: const Text(
-                  'second item',
-                  style: TextStyle(fontSize: 28),
-                ),
-                selected: _index == 2,
-                onTap: () {
-                  setState(() {
-                    _index = 2;
-                    tapTile();
-                  });
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.android, size: 32),
-                title: const Text(
-                  'third item',
-                  style: TextStyle(fontSize: 28),
-                ),
-                selected: _index == 3,
-                onTap: () {
-                  setState(() {
-                    _index = 3;
-                    tapTile();
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
+
+      body: TabBarView( // TabBarViewは、タブに対応するビューを表示するウィジェット
+          controller: _tabController, // controllerに_tabControllerを指定して、タブの選択状態とビューの表示を同期
+          children: tabs.map((Tab tab){ //各タブに対応するウィジェットを作成し、リストとして渡しています
+            return createTab(tab);
+          }).toList(),
       ),
     );
   }
 
-  void tapTile() {
-    // メッセージの更新
-setState(() {
-  _message = 'you tapped: No, $_index.';
-});
+  Widget createTab(Tab tab) { // 各タブに表示する内容を作成します。引数として渡されたTabオブジェクトに基づいて、タブごとに異なるテキストを表示
+    return Center(
+      child: Text(
+        'This is "${tab.text}" Tab.', // tab.textを使って、タブの名前（One、Two、Three）を表示
+        style: const TextStyle(
+          fontSize: 32.0,
+          color: Colors.blue,
+        ),
+      ),
+    );
   }
 }
