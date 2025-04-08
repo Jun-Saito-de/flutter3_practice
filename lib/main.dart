@@ -30,68 +30,55 @@ class MyHomePage extends StatefulWidget {
 }
 
 // State<MyHomePage>を継承
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin { // アニメーションのためのTickerを提供するミックスイン
-// タブのリストを定義
-  static const List<Tab> tabs = <Tab>[
-    Tab(text: 'One',
-    icon: Icon(Icons.star),
-    ), // タブに表示する文字を指定
-    Tab(text: 'Two',
-  icon: Icon(Icons.info),
-    ),
-    Tab(text: 'Three',
-      icon: Icon(Icons.home),
-    ),
-  ];
-
-  // TabController**は、タブの動作を管理するために使うオブジェクトです。タブの切り替えやアニメーションの動作を制御します。
-  // lateというキーワードは、変数が遅延初期化されることを意味します。
-  // TabControllerを保管するための、_tabControllerフィールドが設定されている
-  late TabController _tabController;
+class _MyHomePageState extends State<MyHomePage> {
+  static var _items = <Widget>[];
+  static var _message = 'ok.';
+  static var _tapped = 0;
 
   @override
   // initState()は、ウィジェットの初期化処理を行うメソッドです。ここでは、タブコントローラを初期化
   void initState() {
-   super.initState();
-   _tabController = TabController( // タブの切り替えやアニメーションを管理するためのコントローラー。アニメーションを正常に動作させるために、vsyncを指定します。
-     vsync: this, // アニメーションの同期をとるために使います。thisを指定することで、現在のウィジェットがその役割を担います。
-     length: tabs.length // リストの長さ（タブの数）を指定します。タブの数に合わせてTabControllerを設定
-   );
+    super.initState();
+    for (var i = 0; i < 5; i++) {
+      var item = ListTile(
+        leading: const Icon(Icons.android),
+        title: Text('No, $i'),
+        onTap: () {
+          _tapped = i;
+          tapItem();
+        },
+      );
+      _items.add(item);
+    }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar( // 画面上部に表示されるアプリケーションのバー。タイトルとタブバーを設定。
-        title: Text('My App'),
+        title: const Text('Flutter App'),
       ),
-        bottomNavigationBar: Container(
-          color: Colors.blue,
-          child:TabBar( // タブを管理するウィジェット
-            controller: _tabController, // controllerでTabControllerを指定
-            tabs: tabs, // タブを表示するためにtabsリストを指定
+        body: Center(
+          child: Text(
+              _message,
+          style: const TextStyle(
+            fontSize: 32.0,
+          ),
         ),
-      ),
-
-      body: TabBarView( // TabBarViewは、タブに対応するビューを表示するウィジェット
-          controller: _tabController, // controllerに_tabControllerを指定して、タブの選択状態とビューの表示を同期
-          children: tabs.map((Tab tab){ //各タブに対応するウィジェットを作成し、リストとして渡しています
-            return createTab(tab);
-          }).toList(),
-      ),
+    ),
+    drawer: Drawer(
+    child: ListView(
+    shrinkWrap:  true,
+    padding: const EdgeInsets.all(20.0),
+    children: _items,
+    ),
+    ),
     );
   }
 
-  Widget createTab(Tab tab) { // 各タブに表示する内容を作成します。引数として渡されたTabオブジェクトに基づいて、タブごとに異なるテキストを表示
-    return Center(
-      child: Text(
-        'This is "${tab.text}" Tab.', // tab.textを使って、タブの名前（One、Two、Three）を表示
-        style: const TextStyle(
-          fontSize: 32.0,
-          color: Colors.blue,
-        ),
-      ),
-    );
+  void tapItem() {
+    Navigator.pop(context);
+    setState(() {
+      _message = 'tapped:[$_tapped]';
+    });
   }
 }
