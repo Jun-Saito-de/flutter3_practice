@@ -24,61 +24,66 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
 
   @override
-  // ウィジェットが生成される際に呼ばれ、
-  // ウィジェットの状態を管理するStateオブジェクトを返す
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 // State<MyHomePage>を継承
 class _MyHomePageState extends State<MyHomePage> {
-  static var _items = <Widget>[];
-  static var _message = 'ok.';
-  static var _tapped = 0;
 
-  @override
-  // initState()は、ウィジェットの初期化処理を行うメソッドです。ここでは、タブコントローラを初期化
-  void initState() {
-    super.initState();
-    for (var i = 0; i < 5; i++) {
-      var item = ListTile(
-        leading: const Icon(Icons.android),
-        title: Text('No, $i'),
-        onTap: () {
-          _tapped = i;
-          tapItem();
-        },
-      );
-      _items.add(item);
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( // 画面上部に表示されるアプリケーションのバー。タイトルとタブバーを設定。
-        title: const Text('Flutter App'),
+      backgroundColor: Color.fromARGB(255,255,255,255),
+      appBar: AppBar(
+        title: const Text('App Name', style: TextStyle(fontSize: 30.0),
+        ),
       ),
-        body: Center(
-          child: Text(
-              _message,
-          style: const TextStyle(
-            fontSize: 32.0,
+        body: Container(
+          child: CustomPaint(
+            painter: MyPainter(),
           ),
         ),
-    ),
-    drawer: Drawer(
-    child: ListView(
-    shrinkWrap:  true,
-    padding: const EdgeInsets.all(20.0),
-    children: _items,
-    ),
-    ),
     );
   }
+}
 
-  void tapItem() {
-    Navigator.pop(context);
-    setState(() {
-      _message = 'tapped:[$_tapped]';
-    });
+class MyPainter extends CustomPainter {
+
+  @override
+void paint(Canvas canvas, Size size){
+    Paint p = Paint();
+
+    p.style = PaintingStyle.fill;
+    p.color = Color.fromARGB(150, 0, 200, 255);
+    Rect r = Rect.fromLTWH(50.0, 50.0, 150.0, 150.0);
+    canvas.drawRect(r, p);
+
+    p.style = PaintingStyle.stroke;
+    p.color = Color.fromARGB(150, 200, 0, 255);
+    p.strokeWidth = 10.0;
+    r = Rect.fromLTWH(100, 100, 150, 150);
+    canvas.drawRect(r, p);
+
+    p.style = PaintingStyle.fill;
+    p.color = Color.fromARGB(150, 0, 150, 75);
+    Offset ctr = Offset(250.0, 350.0);
+    canvas.drawCircle(ctr, 50.0, p);
+
+    p.style = PaintingStyle.stroke;
+    p.color = Color.fromARGB(150, 55, 50, 255);
+    p.strokeWidth = 10.0;
+    r = Rect.fromLTWH(20, 270, 150, 200);
+    canvas.drawOval(r,p);
+
+    p.strokeWidth = 3.0;
+    for (var i = 0; i <= 10; i++){
+      Rect r = Rect.fromLTRB(
+          50.0 + 20 * i, 50.0,
+          50.0, 250.0 - 20 * i);
+      canvas.drawLine(r.topLeft, r.bottomRight, p);
+    }
   }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
