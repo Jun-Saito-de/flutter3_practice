@@ -34,9 +34,15 @@ class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin { // アニメーションのためのTickerを提供するミックスイン
 // タブのリストを定義
   static const List<Tab> tabs = <Tab>[
-    Tab(text: 'One'), // タブに表示する文字を指定
-    Tab(text: 'Two'),
-    Tab(text: 'Three'),
+    Tab(text: 'One',
+    icon: Icon(Icons.star),
+    ), // タブに表示する文字を指定
+    Tab(text: 'Two',
+  icon: Icon(Icons.info),
+    ),
+    Tab(text: 'Three',
+      icon: Icon(Icons.home),
+    ),
   ];
 
   // TabController**は、タブの動作を管理するために使うオブジェクトです。タブの切り替えやアニメーションの動作を制御します。
@@ -59,9 +65,12 @@ class _MyHomePageState extends State<MyHomePage>
     return Scaffold(
       appBar: AppBar( // 画面上部に表示されるアプリケーションのバー。タイトルとタブバーを設定。
         title: Text('My App'),
-        bottom: TabBar( // タブを管理するウィジェット
+      ),
+        bottomNavigationBar: Container(
+          color: Colors.blue,
+          child:TabBar( // タブを管理するウィジェット
             controller: _tabController, // controllerでTabControllerを指定
-            tabs: tabs // タブを表示するためにtabsリストを指定
+            tabs: tabs, // タブを表示するためにtabsリストを指定
         ),
       ),
 
