@@ -29,8 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Offset: x, y 座標を表すクラス
-  static double _value = 0;
-  static double _opaq = 0;
+  static ValueNotifier<int> _value = ValueNotifier<int>(0);
 
   @override
   // 初期化処理
@@ -46,70 +45,52 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('App Name', style: TextStyle(fontSize: 30.0),),
       ),
-      body: Column(
-        children: [
-          Padding(padding: EdgeInsets.all(10)),
-          Container(
-            width: 300,
-            height: 300,
-            child: CustomPaint(
-              painter: MyPainter(_value, _opaq.toInt()),
-              child: Center(),
+      body: Center(
+        child: Column(
+          children: [
+            Padding(padding: EdgeInsets.all(10)),
+            Container(
+              width: 300,
+              height: 300,
+              child: CustomPaint(
+                painter: MyPainter(_value),
+                child: Center(),
+              ),
             ),
-          ),
-          Slider(
-            min: 0.0,
-            max: 300.0,
-            value: _value,
-            onChanged: _changeVal,
-          ),
-          Slider(
-            min: 0.0,
-            max: 255.0,
-            value: _opaq,
-            onChanged: _changeOpaq,
-          ),
-        ],
+            Padding(padding: EdgeInsets.all(5)),
+              ElevatedButton(
+                child: Text("Click",
+                  style: TextStyle(fontSize: 32),),
+                  onPressed: ()=>_value.value++, //ボタンが押されたら _value.value++ によって、カウントが1増えます。
+    ),
+          ],
+        ),
       ),
     );
   }
-
-  void _changeVal(double value) {
-    setState(() {
-      _value = value;
-    });
-  }
-  void _changeOpaq(double value) {
-  setState(() {
-    _opaq = value;
-  });
-}
 }
 
 class MyPainter extends CustomPainter {
-  final double _value;
-  final int _opaq;
+  final ValueNotifier<int> _value;
 
-  MyPainter(this._value, this._opaq);
+  MyPainter(this._value);
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint p = Paint();
-
     p.style = PaintingStyle.fill;
-    p.color = Color.fromARGB(_opaq, 0, 200, 100);
-    Rect r = Rect.fromLTWH(
-        (size.width - _value) / 2,
-      (size.height - _value) / 2,
-      _value, _value);
-    canvas.drawOval(r, p);
-    
-    r = Rect.fromLTWH(0, 0, size.width,size.height);
+    p.color = Color.fromARGB(50, 0, 200, 100);
+    Rect r;
+    for (var i = 0; i < _value.value; i++) {
+      r = Rect.fromLTWH(10 + i * 20, 10 + i * 20, 100, 100);
+      canvas.drawRect(r, p);
+    }
+    r = Rect.fromLTWH(0, 0, size.width, size.height);
     p.style = PaintingStyle.stroke;
     p.color = Color.fromARGB(255, 100, 100, 100);
     canvas.drawRect(r, p);
+    if (_value.value > 10) _value.value = 0;
   }
-
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
