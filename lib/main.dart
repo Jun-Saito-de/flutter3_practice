@@ -1,4 +1,4 @@
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -29,83 +29,44 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin { // SingleTickerProviderStateMixin はアニメーション制御に必要。
-  late Animation<double> animation;
-  late AnimationController controller; // アニメーションの再生・停止を管理。
+// State クラス内に flg（フラグ）を定義。
+class _MyHomePageState extends State<MyHomePage> {
+bool flg = false; // false なら「右寄せ」、true なら「左寄せ」になるように制御します。
+// この flg をもとに、四角形の位置が切り替わります。
 
   @override
-
-  // pageStateクラスの初期化を行うinitState
-  void initState() {
-    super.initState();
-    controller = AnimationController( // controller は3秒で一周するアニメーションを定義。
-        duration: const Duration(seconds: 3), // durationはアニメーションの間隔を調整
-        vsync: this // イベントの通知を受け取TIckerProviderを指定
-    );
-    animation = Tween<double>(begin: 0, end: pi*2).animate(controller) // Tween(begin: 0, end: pi*2) で、0〜360度（2πラジアン）まで回転
-      ..addListener(() { // .addListener() で値が更新されるたびに setState() を呼び出し、再描画
-        setState(() {
-        });
-      });
-    controller.repeat(reverse: false); // controller.repeat() でループ再生しています（逆回転なし）。
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+  Widget build(BuildContext context) { // UIを構築する部分です。
+    return Scaffold( // Scaffold によってアプリのベース構造を作成。
       appBar: AppBar(
         title: Text('App Name', style: TextStyle(fontSize: 30.0),),
       ),
-      body: Center(
+      body: Padding(
+        padding: EdgeInsets.all(20),
         child:Column(
           children: [
-            Padding(padding: EdgeInsets.all(10)),
-            Container(
-              width: 300,
-              height: 300,
-              child: CustomPaint(
-                painter: MyPainter(animation.value),
-                child: Center(),
+            Expanded(
+              child: AnimatedAlign( // AnimatedAlign は、Widgetの位置（Align）をアニメーション付きで切り替えるためのウィジェット。
+                alignment: flg ? Alignment.topLeft // 三項演算子による出し分け
+                    : Alignment.topRight,
+                  duration:  const Duration(seconds:1),
+                child: Container(
+                width: 100,
+                height: 100,
+                color: Colors.red,
+              ),
+                        curve: Curves.linear,
               ),
             ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        setState((){ // setState() によりUIが再構築され、AnimatedAlign が自動で再実行されて四角形が動きます。
+          flg = !flg; // 押すと flg の値が反転（true → false、またはその逆）。
+        });
+      },
+        child: const Icon(Icons.star),
+      ),
     );
   }
-}
-
-class MyPainter extends CustomPainter{
-  final double value;
-
-  MyPainter(this.value);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint p = Paint();
-    canvas.save();
-
-    p.style = PaintingStyle.fill;
-    p.color = Color.fromARGB(100, 255, 0, 255);
-    Rect r = Rect.fromLTWH(0,0,250, 250);
-    canvas.translate(150, 250);
-    canvas.rotate(value);
-    canvas.translate(-125, -125);
-    canvas.drawRect(r, p);
-
-    canvas.restore();
-    p.style = PaintingStyle.stroke;
-    p.strokeWidth = 25;
-    p.color = Color.fromARGB(100, 0, 255, 255);
-    r = Rect.fromLTWH(0,0,250, 250);
-    canvas.translate(150, 250);
-    canvas.rotate(value * -1);
-    canvas.translate(-125, -125);
-    canvas.drawRect(r, p);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
