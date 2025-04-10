@@ -1,31 +1,29 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialSampleApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MaterialSampleApp extends StatelessWidget {
+  const MaterialSampleApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: "Flutter Demo",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -36,13 +34,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Color.fromARGB(255,255,255,255),
       appBar: AppBar(
-        title: Text('App Name', style: TextStyle(fontSize: 30.0),),
+        title: const Text("App Name", style: TextStyle(fontSize: 30.0),),
       ),
-      body:Container(
+      body: Center(
         child: CustomPaint(
-          painter: MyPainter(),
+          painter:MyPainter(),
         ),
       ),
     );
@@ -50,32 +48,46 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class MyPainter extends CustomPainter{
-
   @override
   void paint(Canvas canvas, Size size) {
+// 原点を画面の中央から少し上に移動
+    canvas.translate(size.width / 2, size.height / 4); // 上に移動
+    Path path = Path();
+    Rect r = Rect.fromLTWH(25.0, 25.0, 75.0, 75.0);
+    path.addOval(r);
+    r = Rect.fromLTWH(75.0, 75.0, 125.0, 125.0);
+    path.addOval(r);
+    r = Rect.fromLTWH(0, 0, 150.0, 150.0);
+    path.addOval(r);
+
+    canvas.save();
+
     Paint p = Paint();
+    p.color = Color.fromARGB(150, 255, 0, 0);
+    p.style = PaintingStyle.fill;
+    canvas.drawPath(path,p);
 
-    ui.ParagraphBuilder builder = ui.ParagraphBuilder(
-      ui.ParagraphStyle(textDirection: TextDirection.ltr),
-    )
-      ..pushStyle(ui.TextStyle(color:Colors.red, fontSize: 48.0))
-      ..addText('Hello! ')
-      ..pushStyle(ui.TextStyle(color: Colors.blue[700],fontSize: 30.0))
-      ..addText('This is a sample of paragraph text. ')
-      ..pushStyle(ui.TextStyle(color: Colors.blue[200],fontSize: 30.0))
-      ..addText('You can draw MULTI-FONT text! ');
+    canvas.translate(0.0, 100.0);
+    p.color = Color.fromARGB(150, 0, 0, 255);
+    canvas.drawPath(path,p);
 
-    ui.Paragraph paragraph = builder.build()
-      ..layout(ui.ParagraphConstraints(width:300.0));
+    p.color = Color.fromARGB(150, 0, 255, 0);
+    canvas.rotate(-0.5 * pi);
+    canvas.translate(-500.0, 50.0);
+    canvas.scale(1 * 1.5);
+    canvas.drawPath(path,p);
 
-    final double textWidth = paragraph.maxIntrinsicWidth;
-    final double textHeight = paragraph.height;
+    canvas.restore();
 
-    Offset circleOffset = Offset(200.0, 200.0);
-    p.color = Color.fromARGB(100, 200, 205, 255);
-    canvas.drawCircle(circleOffset, 175.0, p);
-    Offset textOffset = Offset(70, 150.0 - 50.0);
-    canvas.drawParagraph(paragraph, textOffset);
+    Path triangle = Path();
+    triangle.moveTo(100, 100);
+    triangle.lineTo(150, 150);
+    triangle.lineTo(200, 100);
+    triangle.close(); // 三角形を閉じる
+    Paint tp = Paint();
+    tp.color = Color.fromARGB(250, 255, 250, 70);
+    tp.style = PaintingStyle.fill;
+    canvas.drawPath(triangle,tp);
   }
 
   @override
