@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("App Name", style: TextStyle(fontSize: 30.0),),
       ),
-      body: Center(
+      body: Container(
         child: CustomPaint(
           painter:MyPainter(),
         ),
@@ -50,14 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
 class MyPainter extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
-// 原点を画面の中央から少し上に移動
-    canvas.translate(size.width / 2, size.height / 4); // 上に移動
+    canvas.translate(size.width / 2, size.height / 2);
     Path path = Path();
-    Rect r = Rect.fromLTWH(25.0, 25.0, 75.0, 75.0);
+    Rect r = Rect.fromLTWH(50.0, 50.0, 75.0, 75.0);
     path.addOval(r);
     r = Rect.fromLTWH(75.0, 75.0, 125.0, 125.0);
     path.addOval(r);
-    r = Rect.fromLTWH(0, 0, 150.0, 150.0);
+    r = Rect.fromLTWH(125.0, 125.0, 175.0, 175.0);
     path.addOval(r);
 
     canvas.save();
@@ -67,7 +66,7 @@ class MyPainter extends CustomPainter{
     p.style = PaintingStyle.fill;
     canvas.drawPath(path,p);
 
-    canvas.translate(0.0, 100.0);
+    canvas.translate(0.0, 150.0);
     p.color = Color.fromARGB(150, 0, 0, 255);
     canvas.drawPath(path,p);
 
