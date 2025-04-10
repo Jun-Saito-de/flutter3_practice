@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,18 +29,29 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  // Offset: x, y 座標を表すクラス
-  static ValueNotifier<int> _value = ValueNotifier<int>(0);
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin { // SingleTickerProviderStateMixin はアニメーション制御に必要。
+  late Animation<double> animation;
+  late AnimationController controller; // アニメーションの再生・停止を管理。
 
   @override
-  // 初期化処理
-  void initState(){
+
+  // pageStateクラスの初期化を行うinitState
+  void initState() {
     super.initState();
+    controller = AnimationController( // controller は3秒で一周するアニメーションを定義。
+        duration: const Duration(seconds: 3), // durationはアニメーションの間隔を調整
+        vsync: this // イベントの通知を受け取TIckerProviderを指定
+    );
+    animation = Tween<double>(begin: 0, end: pi*2).animate(controller) // Tween(begin: 0, end: pi*2) で、0〜360度（2πラジアン）まで回転
+      ..addListener(() { // .addListener() で値が更新されるたびに setState() を呼び出し、再描画
+        setState(() {
+        });
+      });
+    controller.repeat(reverse: false); // controller.repeat() でループ再生しています（逆回転なし）。
   }
 
   @override
-  // 画面構築
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -46,23 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('App Name', style: TextStyle(fontSize: 30.0),),
       ),
       body: Center(
-        child: Column(
+        child:Column(
           children: [
             Padding(padding: EdgeInsets.all(10)),
             Container(
               width: 300,
               height: 300,
               child: CustomPaint(
-                painter: MyPainter(_value),
+                painter: MyPainter(animation.value),
                 child: Center(),
               ),
             ),
-            Padding(padding: EdgeInsets.all(5)),
-              ElevatedButton(
-                child: Text("Click",
-                  style: TextStyle(fontSize: 32),),
-                  onPressed: ()=>_value.value++, //ボタンが押されたら _value.value++ によって、カウントが1増えます。
-    ),
           ],
         ),
       ),
@@ -70,27 +77,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MyPainter extends CustomPainter {
-  final ValueNotifier<int> _value;
+class MyPainter extends CustomPainter{
+  final double value;
 
-  MyPainter(this._value);
+  MyPainter(this.value);
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint p = Paint();
+    canvas.save();
+
     p.style = PaintingStyle.fill;
-    p.color = Color.fromARGB(50, 0, 200, 100);
-    Rect r;
-    for (var i = 0; i < _value.value; i++) {
-      r = Rect.fromLTWH(10 + i * 20, 10 + i * 20, 100, 100);
-      canvas.drawRect(r, p);
-    }
-    r = Rect.fromLTWH(0, 0, size.width, size.height);
-    p.style = PaintingStyle.stroke;
-    p.color = Color.fromARGB(255, 100, 100, 100);
+    p.color = Color.fromARGB(100, 255, 0, 255);
+    Rect r = Rect.fromLTWH(0,0,250, 250);
+    canvas.translate(150, 250);
+    canvas.rotate(value);
+    canvas.translate(-125, -125);
     canvas.drawRect(r, p);
-    if (_value.value > 10) _value.value = 0;
+
+    canvas.restore();
+    p.style = PaintingStyle.stroke;
+    p.strokeWidth = 25;
+    p.color = Color.fromARGB(100, 0, 255, 255);
+    r = Rect.fromLTWH(0,0,250, 250);
+    canvas.translate(150, 250);
+    canvas.rotate(value * -1);
+    canvas.translate(-125, -125);
+    canvas.drawRect(r, p);
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
