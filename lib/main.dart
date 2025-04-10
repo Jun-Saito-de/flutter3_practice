@@ -44,22 +44,15 @@ bool flg = false; // false なら「右寄せ」、true なら「左寄せ」に
         padding: EdgeInsets.all(20),
         child:Column(
           children: [
-            Expanded(
-              child: AnimatedAlign( // AnimatedAlign は、Widgetの位置（Align）をアニメーション付きで切り替えるためのウィジェット。
-                alignment: flg ? Alignment.topLeft // 三項演算子による出し分け
-                    : Alignment.topRight,
-                  duration:  const Duration(seconds:1),
-                child: Container(
-                width: 100,
-                height: 100,
-                color: Colors.red,
-              ),
-                        curve: Curves.linear,
-              ),
+                AnimatedContainer(
+                    duration: const Duration(seconds: 3),
+                    color: flg ? Colors.red : Colors.yellow,
+                    width: flg ? 100 : 300,
+                    height: flg ? 300 : 100,
+                  ),
+              ],
             ),
-          ],
         ),
-      ),
       floatingActionButton: FloatingActionButton(onPressed: (){
         setState((){ // setState() によりUIが再構築され、AnimatedAlign が自動で再実行されて四角形が動きます。
           flg = !flg; // 押すと flg の値が反転（true → false、またはその逆）。
@@ -68,5 +61,5 @@ bool flg = false; // false なら「右寄せ」、true なら「左寄せ」に
         child: const Icon(Icons.star),
       ),
     );
-  }
+}
 }
